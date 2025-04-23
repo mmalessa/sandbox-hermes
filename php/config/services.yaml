@@ -1,0 +1,15 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+
+    App\UI\Console\:
+        resource: '%kernel.project_dir%/src/UI/Console/*Command.php'
+        autoconfigure: true
+        autowire: false
+        bind:
+            $hermesHandler: '@App\Infrastructure\Grpc\Hermes\HermesHandler'
+
+    App\Infrastructure\Grpc\Hermes\HermesHandler:

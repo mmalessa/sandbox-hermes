@@ -1,0 +1,9 @@
+version: '3'
+
+server:
+    command: "php bin/console grpc:serve"
+
+grpc:
+    listen: "tcp://0.0.0.0:9000"
+    proto:
+        - "proto/hermes.proto"

@@ -1,0 +1,42 @@
+services:
+    phpdev:
+        build:
+            context: .
+            target: phpdev
+            args:
+                DEVELOPER_UID: 1000
+        restart: on-failure
+        volumes:
+            - ./php:/app:consistent
+            - ./proto:/app/proto
+            - ./go/bin:/app/bin/go
+            - ./.docker/php/php-override.ini:/usr/local/etc/php/conf.d/php-override.ini
+            - php_user_home:/home/developer
+        networks:
+            net:
+        tty: true
+    godev:
+        build:
+            context: .
+            target: godev
+            args:
+                DEVELOPER_UID: 1000
+        restart: on-failure
+        volumes:
+            - ./go:/go/src/hermes:consistent
+            - ./proto:/go/src/hermes/proto
+            - gopkg:/go/pkg/
+            - gobin:/go/bin/
+            - go_user_home:/home/developer
+        networks:
+            net:
+        tty: true
+
+volumes:
+    php_user_home:
+    go_user_home:
+    gopkg:
+    gobin:
+
+networks:
+    net:

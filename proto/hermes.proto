@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package hermes;
+option php_namespace = "App\\Infrastructure\\Grpc\\Hermes";
+
+service HermesHandler {
+    rpc Handle (HermesRequest) returns (HermesResponse);
+}
+
+message HermesRequest {
+    string payload = 1;
+}
+
+message HermesResponse {
+    string result = 1;
+}
