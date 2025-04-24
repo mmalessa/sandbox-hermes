@@ -1,8 +1,11 @@
 # Hermes sandbox
 An attempt to create a universal tool for asynchronous communication between microservices
 
-**It's a sandbox! It may not work. It may not work as expected. Use at your own risk.**
-
+<div style="color: red;font-weight:bold">
+It's a sandbox! 
+It may not work. It may not work as expected. Use at your own risk.
+</div>
+No tests, no rules... Wild West ;-)
 
 ### Visual Studio Code
 1. Install (Ctrl + Shift + X): Dev - Containers (Microsoft)

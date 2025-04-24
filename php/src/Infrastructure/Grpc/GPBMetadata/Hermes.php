@@ -16,10 +16,11 @@ class Hermes
         }
         $pool->internalAddGeneratedFile(
             '
-Ï
-hermes.protohermes" 
+Ý
+hermes.protohermes".
 HermesRequest
-payload (	" 
+headers (	
+body (	" 
 HermesResponse
 result (	2H
 HermesHandler7

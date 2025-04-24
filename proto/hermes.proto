@@ -8,7 +8,8 @@ service HermesHandler {
 }
 
 message HermesRequest {
-    string payload = 1;
+    repeated string headers = 1;
+    string body = 2;
 }
 
 message HermesResponse {

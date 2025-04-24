@@ -26,7 +26,7 @@ func main() {
 	defer cancel()
 
 	res, err := client.Handle(ctx, &hermes.HermesRequest{
-		Payload: "Hello from Go!",
+		Body: "Hello from Go!",
 	})
 	if err != nil {
 		panic(err)

@@ -23,7 +23,8 @@ const (
 
 type HermesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Payload       string                 `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	Headers       []string               `protobuf:"bytes,1,rep,name=headers,proto3" json:"headers,omitempty"`
+	Body          string                 `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,9 +59,16 @@ func (*HermesRequest) Descriptor() ([]byte, []int) {
 	return file_hermes_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *HermesRequest) GetPayload() string {
+func (x *HermesRequest) GetHeaders() []string {
 	if x != nil {
-		return x.Payload
+		return x.Headers
+	}
+	return nil
+}
+
+func (x *HermesRequest) GetBody() string {
+	if x != nil {
+		return x.Body
 	}
 	return ""
 }
@@ -113,9 +121,10 @@ var File_hermes_proto protoreflect.FileDescriptor
 
 const file_hermes_proto_rawDesc = "" +
 	"\n" +
-	"\fhermes.proto\x12\x06hermes\")\n" +
+	"\fhermes.proto\x12\x06hermes\"=\n" +
 	"\rHermesRequest\x12\x18\n" +
-	"\apayload\x18\x01 \x01(\tR\apayload\"(\n" +
+	"\aheaders\x18\x01 \x03(\tR\aheaders\x12\x12\n" +
+	"\x04body\x18\x02 \x01(\tR\x04body\"(\n" +
 	"\x0eHermesResponse\x12\x16\n" +
 	"\x06result\x18\x01 \x01(\tR\x06result2H\n" +
 	"\rHermesHandler\x127\n" +

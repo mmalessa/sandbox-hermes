@@ -15,9 +15,13 @@ use Google\Protobuf\Internal\GPBUtil;
 class HermesRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Generated from protobuf field <code>string payload = 1;</code>
+     * Generated from protobuf field <code>repeated string headers = 1;</code>
      */
-    protected $payload = '';
+    private $headers;
+    /**
+     * Generated from protobuf field <code>string body = 2;</code>
+     */
+    protected $body = '';
 
     /**
      * Constructor.
@@ -25,7 +29,8 @@ class HermesRequest extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type string $payload
+     *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $headers
+     *     @type string $body
      * }
      */
     public function __construct($data = NULL) {
@@ -34,23 +39,45 @@ class HermesRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string payload = 1;</code>
-     * @return string
+     * Generated from protobuf field <code>repeated string headers = 1;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
      */
-    public function getPayload()
+    public function getHeaders()
     {
-        return $this->payload;
+        return $this->headers;
     }
 
     /**
-     * Generated from protobuf field <code>string payload = 1;</code>
+     * Generated from protobuf field <code>repeated string headers = 1;</code>
+     * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setHeaders($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
+        $this->headers = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string body = 2;</code>
+     * @return string
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+     * Generated from protobuf field <code>string body = 2;</code>
      * @param string $var
      * @return $this
      */
-    public function setPayload($var)
+    public function setBody($var)
     {
         GPBUtil::checkString($var, True);
-        $this->payload = $var;
+        $this->body = $var;
 
         return $this;
     }

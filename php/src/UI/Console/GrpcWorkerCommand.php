@@ -11,8 +11,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'grpc:serve', description: 'gRPC Server')]
-class GrpcServeCommand extends Command
+#[AsCommand(name: 'grpc:worker', description: 'gRPC Worker')]
+class GrpcWorkerCommand extends Command
 {
     public function __construct(
         private readonly HermesHandler $hermesHandler
