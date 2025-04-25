@@ -1,7 +1,8 @@
+# see https://github.com/roadrunner-server/roadrunner/blob/master/schemas/config/3.0.schema.json
 version: '3'
 
 server:
-    command: "php bin/console grpc:worker"
+    command: "php bin/console dummy:worker"
 
 # see https://docs.roadrunner.dev/docs/plugins/grpc
 grpc:
@@ -9,10 +10,9 @@ grpc:
     proto:
         - "proto/hermes.proto"
     pool:
+        # The command to use for the pool. If defined, this will override the value in `server.command` for this pool only
+        command: "php bin/console grpc:worker"
         debug: true
-#        command: "php bin/console grpc:worker"
         num_workers: 2
         max_jobs: 2
-        allocate_timeout: 60s
-        reset_timeout: 60s
-        destroy_timeout: 60s
+        

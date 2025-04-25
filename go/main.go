@@ -1,36 +1,53 @@
 package main
 
 import (
-	"context"
-	"hermes/gen/hermes"
-	"log"
+	"hermes/internal/externalserver"
+	"hermes/internal/stdloger"
+	"os"
 	"time"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	conn, err := grpc.NewClient(
-		"localhost:9000",
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		panic(err)
+	logrus.Info("Hermes start")
+
+	cmdLine := []string{"php", "bin/console", "hermes:test-worker"}
+	envs := map[string]string{}
+	stdl := stdloger.New()
+
+	es := externalserver.New(envs, cmdLine, stdl)
+
+	es.Start()
+	defer func() {
+		if err := es.Stop(); err != nil {
+			logrus.Error(err)
+			os.Exit(1)
+		}
+	}()
+
+	go func() {
+		if err := es.Wait(); err != nil {
+			logrus.Error(err)
+			os.Exit(1)
+		}
+		logrus.Warning("External server end")
+	}()
+
+	for i := 0; i < 5; i++ {
+		if i > 0 {
+			time.Sleep(time.Second)
+		}
+		printMemoryUsage(es)
 	}
-	defer conn.Close()
 
-	client := hermes.NewHermesHandlerClient(conn)
+	logrus.Info("Hermes end")
+}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	res, err := client.Handle(ctx, &hermes.HermesRequest{
-		Body: "Hello from Go!",
-	})
-	if err != nil {
-		panic(err)
+func printMemoryUsage(es *externalserver.ExternalServer) {
+	if mu, err := es.MemoryUsage(); err != nil {
+		logrus.Error(err)
+	} else {
+		logrus.Infof("Memory usage %d\n", mu)
 	}
-
-	log.Printf("Response from PHP: %s\n", res.GetResult())
 }
