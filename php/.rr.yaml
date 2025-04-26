@@ -11,8 +11,7 @@ grpc:
         - "proto/hermes.proto"
     pool:
         # The command to use for the pool. If defined, this will override the value in `server.command` for this pool only
-        command: "php bin/console grpc:worker"
+        command: "php bin/console hermes:grpc-worker"
         debug: true
         num_workers: 2
         max_jobs: 2
-        

@@ -52,9 +52,9 @@ go-protoc:
 	@$(DC) exec -it godev sh -c 'protoc --proto_path=./proto --go_out=. --go_opt=paths=source_relative,Mhermes.proto=hermes/gen/hermes --go-grpc_out=. --go-grpc_opt=paths=source_relative,Mhermes.proto=hermes/gen/hermes ./proto/hermes.proto'
 	@$(DC) exec -it godev sh -c 'mv hermes_grpc.pb.go gen/hermes && mv hermes.pb.go gen/hermes'
 
-.PHONY: php-serve
-php-serve:
-	@$(DC) exec -it phpdev sh -c 'bin/rr serve -c .rr.yaml'
+#.PHONY: php-serve
+#php-serve:
+#	@$(DC) exec -it phpdev sh -c 'bin/rr serve -c .rr.yaml'
 
 .PHONY: go-shell
 go-shell: ## Enter GO application dev container

@@ -10,6 +10,6 @@ func New() *StdLogger {
 }
 
 func (l *StdLogger) Write(p []byte) (n int, err error) {
-	fmt.Printf("%s", p)
+	fmt.Printf("StdLoger: %s", p)
 	return len(p), nil
 }

@@ -14,11 +14,9 @@ class TestWorkerCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        echo "Hello from PHP!\n";
-
-        for ($i = 1; $i <= 2; $i++) {
-            printf("Tick from PHP %d\n", $i);
-            sleep(1);
+        while (($line = fgets(STDIN)) !== false) {
+            $line = rtrim($line);
+            printf("PHP received: %s\n", $line);
         }
         return Command::SUCCESS;
     }

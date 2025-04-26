@@ -1,0 +1,6 @@
+{
+  "name": "hermes-dev",
+  "dockerComposeFile": "../compose.yaml",
+  "service": "godev",
+  "workspaceFolder": "/go/src/hermes"
+}

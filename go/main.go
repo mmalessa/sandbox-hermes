@@ -4,12 +4,14 @@ import (
 	"hermes/internal/externalserver"
 	"hermes/internal/stdloger"
 	"os"
-	"time"
+	"strconv"
+	"sync"
 
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
+	logrus.SetLevel(logrus.DebugLevel)
 	logrus.Info("Hermes start")
 
 	cmdLine := []string{"php", "bin/console", "hermes:test-worker"}
@@ -19,11 +21,16 @@ func main() {
 	es := externalserver.New(envs, cmdLine, stdl)
 
 	es.Start()
+
+	var wg sync.WaitGroup
+	wg.Add(2)
 	defer func() {
 		if err := es.Stop(); err != nil {
 			logrus.Error(err)
 			os.Exit(1)
 		}
+		logrus.Info("Hermes ended gracefully")
+		wg.Done()
 	}()
 
 	go func() {
@@ -31,23 +38,24 @@ func main() {
 			logrus.Error(err)
 			os.Exit(1)
 		}
-		logrus.Warning("External server end")
+		logrus.Warning("External server ended gracefully")
+		wg.Done()
 	}()
 
-	for i := 0; i < 5; i++ {
-		if i > 0 {
-			time.Sleep(time.Second)
+	for i := 0; i < 3; i++ {
+
+		message := "Hello from GO! " + strconv.Itoa(i)
+		if err := es.Send([]byte(message)); err != nil {
+			logrus.Error(err)
+		} else {
+			logrus.Infof("Request to PHP: %s", message)
 		}
-		printMemoryUsage(es)
-	}
 
-	logrus.Info("Hermes end")
-}
-
-func printMemoryUsage(es *externalserver.ExternalServer) {
-	if mu, err := es.MemoryUsage(); err != nil {
-		logrus.Error(err)
-	} else {
-		logrus.Infof("Memory usage %d\n", mu)
+		if response, err := es.Receive(); err != nil {
+			logrus.Error(err)
+		} else {
+			logrus.Infof("Response from PHP: %s", response)
+		}
 	}
+	logrus.Info("END")
 }

@@ -7,8 +7,6 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "spiral/roadrunner": "^2024.3",
-        "spiral/roadrunner-grpc": "^3.5",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
         "symfony/flex": "^2",
