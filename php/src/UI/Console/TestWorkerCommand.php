@@ -16,8 +16,11 @@ class TestWorkerCommand extends Command
     {
         while (($line = fgets(STDIN)) !== false) {
             $line = rtrim($line);
-            printf("PHP received: %s\n", $line);
+            $testEnv = getenv("TEST_ENV");
+            printf("PHP received: %s (TEST_ENV=%s)\n", $line, $testEnv ?: "--");
+            sleep(1);
         }
+
         return Command::SUCCESS;
     }
 }

@@ -79,13 +79,16 @@ func (e *ExternalServer) Wait() error {
 	if err := e.execCmd.Wait(); err != nil {
 		return err
 	}
-	e.Stop()
+	logrus.Debug("Extenral serwer finished")
+	e.destruct()
 	return nil
 }
 
 func (e *ExternalServer) Stop() error {
-	logrus.Debug("STOP")
+	logrus.Debug("ExternalServer -> STOP")
 	defer e.destruct()
+	e.stdin.Close()
+	e.stdout.Close()
 
 	// First check
 	if e.execCmd.ProcessState != nil && e.execCmd.ProcessState.Exited() {
@@ -127,7 +130,6 @@ func (e *ExternalServer) Stop() error {
 }
 
 func (e *ExternalServer) destruct() {
-	logrus.Debug("destruct")
 	e.pid = 0
 	e.process = nil
 	e.stdin.Close()
@@ -158,6 +160,9 @@ func (e *ExternalServer) MemoryUsage() (uint64, error) {
 
 // PHP STDIN
 func (e *ExternalServer) Send(msg []byte) error {
+	if e.pid == 0 {
+		return nil
+	}
 	msg = append(msg, '\n')
 	_, err := e.stdin.Write(msg)
 	return err
@@ -171,5 +176,8 @@ func (e *ExternalServer) Send(msg []byte) error {
 
 // PHP STDOUT
 func (e *ExternalServer) Receive() (string, error) {
+	if e.pid == 0 {
+		return "", nil
+	}
 	return e.reader.ReadString('\n')
 }
