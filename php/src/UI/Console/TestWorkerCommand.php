@@ -24,19 +24,16 @@ class TestWorkerCommand extends Command
             }
             $request = MessagePack::unpack($data);
 
-            $text = sprintf(
-                "PHP received message: '%s' with ID: '%s', (TEST_ENV=%s)\n",
-                $request['text'],
-                $request['id'],
-                $testEnv ?: "--"
-            );
+            $responseMessage = sprintf("Response from PHP: (request %s)", json_encode($request));
 
             $response = [
-                'status' => 'OK',
+                'status' => 'SUCCESS',
+                'statusCode' => 200,
                 'id' => $request['id'],
-                'response' => $text,
+                'message' => $responseMessage,
             ];
             $this->writeMessage(MessagePack::pack($response));
+
             usleep(500000);
         }
 

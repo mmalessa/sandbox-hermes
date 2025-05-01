@@ -161,14 +161,14 @@ func (e *ExternalServer) MemoryUsage() (uint64, error) {
 }
 
 // PHP STDIN
-func (e *ExternalServer) Send(msg []byte) error {
+func (e *ExternalServer) Send(req InternalRequest) error {
 	if e.pid == 0 {
 		return nil
 	}
 
-	// msg = append(msg, '\n')
-	binary.Write(e.stdin, binary.BigEndian, uint32(len(msg)))
-	_, err := e.stdin.Write(msg)
+	packed, _ := msgpack.Marshal(req)
+	binary.Write(e.stdin, binary.BigEndian, uint32(len(packed)))
+	_, err := e.stdin.Write(packed)
 	return err
 }
 
@@ -179,26 +179,34 @@ func (e *ExternalServer) Send(msg []byte) error {
 // }
 
 // PHP STDOUT
-func (e *ExternalServer) Receive() (string, error) {
+func (e *ExternalServer) Receive() (InternalResponse, error) {
+	var resp InternalResponse
+
 	if e.pid == 0 {
-		return "", nil
+		return resp, nil
 	}
 
+	// Get length
 	lenBuf := make([]byte, 4)
 	if _, err := e.stdout.Read(lenBuf); err != nil {
-		return "", err
+		return resp, err
 	}
-
 	length := binary.BigEndian.Uint32(lenBuf)
 
+	// Get response
 	respBuffer := make([]byte, length)
 	if _, err := e.stdout.Read(respBuffer); err != nil {
-		return "", err
+		return resp, err
 	}
 
-	var resp map[string]string
-	msgpack.Unmarshal(respBuffer, &resp)
+	// var generic map[string]interface{}
+	// if err := msgpack.Unmarshal(respBuffer, &generic); err == nil {
+	// 	logrus.Debugf("Decoded map: %+v", generic)
+	// }
 
-	return fmt.Sprintf("%#v", resp), nil
-	// return e.reader.ReadString('\n')
+	if err := msgpack.Unmarshal(respBuffer, &resp); err != nil {
+		return resp, err
+	}
+
+	return resp, nil
 }
