@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UI\Console;
 
+use MessagePack\MessagePack;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,14 +15,47 @@ class TestWorkerCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        while (($line = fgets(STDIN)) !== false) {
-            $line = rtrim($line);
-            $testEnv = getenv("TEST_ENV");
-            printf("PHP received: %s (TEST_ENV=%s)\n", $line, $testEnv ?: "--");
-            fwrite(STDERR, $line);
-            sleep(1);
+        $testEnv = getenv("TEST_ENV");
+
+        while (!feof(STDIN)) {
+            $data = $this->readMessage();
+            if ($data === null) {
+                break;
+            }
+            $request = MessagePack::unpack($data);
+
+            $text = sprintf(
+                "PHP received message: '%s' with ID: '%s', (TEST_ENV=%s)\n",
+                $request['text'],
+                $request['id'],
+                $testEnv ?: "--"
+            );
+
+            $response = [
+                'status' => 'OK',
+                'id' => $request['id'],
+                'response' => $text,
+            ];
+            $this->writeMessage(MessagePack::pack($response));
+            usleep(500000);
         }
 
         return Command::SUCCESS;
+    }
+
+    private function readMessage(): ?string
+    {
+        $lenBin = fread(STDIN, 4);
+        if (strlen($lenBin) < 4) {
+            return null;
+        }
+        $unpacked = unpack('Nlen', $lenBin);
+        return fread(STDIN, $unpacked['len']);
+    }
+
+    function writeMessage(string $payload): void {
+        $len = strlen($payload);
+        fwrite(STDOUT, pack('N', $len));
+        fwrite(STDOUT, $payload);
     }
 }

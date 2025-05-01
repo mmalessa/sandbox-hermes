@@ -2,6 +2,7 @@ package externalserver
 
 import (
 	"bufio"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/shirou/gopsutil/process"
 	"github.com/sirupsen/logrus"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 type ExternalServer struct {
@@ -163,7 +165,9 @@ func (e *ExternalServer) Send(msg []byte) error {
 	if e.pid == 0 {
 		return nil
 	}
-	msg = append(msg, '\n')
+
+	// msg = append(msg, '\n')
+	binary.Write(e.stdin, binary.BigEndian, uint32(len(msg)))
 	_, err := e.stdin.Write(msg)
 	return err
 }
@@ -179,5 +183,22 @@ func (e *ExternalServer) Receive() (string, error) {
 	if e.pid == 0 {
 		return "", nil
 	}
-	return e.reader.ReadString('\n')
+
+	lenBuf := make([]byte, 4)
+	if _, err := e.stdout.Read(lenBuf); err != nil {
+		return "", err
+	}
+
+	length := binary.BigEndian.Uint32(lenBuf)
+
+	respBuffer := make([]byte, length)
+	if _, err := e.stdout.Read(respBuffer); err != nil {
+		return "", err
+	}
+
+	var resp map[string]string
+	msgpack.Unmarshal(respBuffer, &resp)
+
+	return fmt.Sprintf("%#v", resp), nil
+	// return e.reader.ReadString('\n')
 }

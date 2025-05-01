@@ -9,7 +9,9 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 func main() {
@@ -46,11 +48,15 @@ func main() {
 
 	// example only
 	for i := 0; i < 3; i++ {
-		message := "Hello from GO! " + strconv.Itoa(i)
-		if err := es.Send([]byte(message)); err != nil {
+		text := "Hello from GO! " + strconv.Itoa(i)
+		id := uuid.New().String()
+		msg := map[string]string{"text": text, "id": id}
+		packed, _ := msgpack.Marshal(msg)
+
+		if err := es.Send(packed); err != nil {
 			logrus.Error(err)
 		} else {
-			logrus.Infof("Request to PHP: %s", message)
+			logrus.Infof("Request to PHP: %#v", msg)
 		}
 
 		if response, err := es.Receive(); err != nil {
