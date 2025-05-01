@@ -18,6 +18,7 @@ class TestWorkerCommand extends Command
             $line = rtrim($line);
             $testEnv = getenv("TEST_ENV");
             printf("PHP received: %s (TEST_ENV=%s)\n", $line, $testEnv ?: "--");
+            fwrite(STDERR, $line);
             sleep(1);
         }
 

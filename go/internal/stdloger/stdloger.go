@@ -1,6 +1,8 @@
 package stdloger
 
-import "fmt"
+import (
+	"github.com/sirupsen/logrus"
+)
 
 type StdLogger struct {
 }
@@ -10,6 +12,6 @@ func New() *StdLogger {
 }
 
 func (l *StdLogger) Write(p []byte) (n int, err error) {
-	fmt.Printf("StdLoger: %s", p)
+	logrus.Debugf("StdLoger: %s", p)
 	return len(p), nil
 }
